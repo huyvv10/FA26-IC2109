@@ -152,6 +152,8 @@ class SinglyLinkedList {
 		void removeFirst(){
 			if (isEmpty()) return;
 			if (head->next==nullptr){
+				Node *tmp=head;
+				delete tmp;
 				head=tail=nullptr; return;
 			}
 			Node *tmp=head;
@@ -161,12 +163,37 @@ class SinglyLinkedList {
 		
 		//Delete a node at the last of the list
 		void removeLast(){
-			
+			if (isEmpty()) return;
+			if (head->next==nullptr){
+				Node *tmp=head;
+				head=tail=nullptr;
+				delete tmp; return;				
+			}
+			Node *cur=head;
+			while (cur->next!=tail){
+				cur=cur->next;
+			}
+			Node *tmp=tail;
+			cur->next=nullptr;
+			tail=cur;
+			delete tmp;			
 		}
 		
 		//Delete a node at the position pos
 		void removeAtPos(int pos){
-			
+			int n=countNodes();
+			if (pos<0 || pos>=n) return;
+			if (pos==0){removeFirst(); return;}
+			if (pos==n-1){removeLast(); return;}
+			Node *cur=head;
+			int i=0;
+			while (i+1!=pos){
+				i++;
+				cur=cur->next;
+			}
+			Node *tmp=cur->next;
+			cur->next=cur->next->next;	//cur->next=tmp->next
+			delete tmp;
 		}
 		
 		//Delete all elements with value as x
@@ -186,7 +213,9 @@ void menu() {
 	cout<<"7. Get value at pos"<<endl;
 	cout<<"8. Edit at pos"<<endl;
 	cout<<"9. Remove first"<<endl;
-	cout<<"0. Add first"<<endl;
+	cout<<"10. Remove last"<<endl;
+	cout<<"11. Remove at pos"<<endl;
+	cout<<"0. Quit"<<endl;
 	cout<<"Your selection: ";
 }
 int main() {
@@ -255,6 +284,16 @@ int main() {
 				myList.removeFirst(); 
 				myList.display();
 				break;
+			case 10:
+				cout<<"Remove last"<<endl;
+				myList.removeLast(); 
+				myList.display();
+				break;
+			case 11:
+				cout<<"Remove at pos"<<endl;
+				cout<<"Input position to remove: "; cin>>pos;
+				myList.removeAtPos(pos);
+				myList.display(); break;
 			case 0:
 				cout<<"Bye bye!"<<endl;
 				break;
