@@ -147,6 +147,32 @@ class SinglyLinkedList {
 			}
 			cur->info=newX;
 		}
+		
+		//Delete a node at the begining of the list
+		void removeFirst(){
+			if (isEmpty()) return;
+			if (head->next==nullptr){
+				head=tail=nullptr; return;
+			}
+			Node *tmp=head;
+			head=head->next;
+			delete tmp;
+		}
+		
+		//Delete a node at the last of the list
+		void removeLast(){
+			
+		}
+		
+		//Delete a node at the position pos
+		void removeAtPos(int pos){
+			
+		}
+		
+		//Delete all elements with value as x
+		void removeAll(int x){
+			
+		}
 };
 
 void menu() {
@@ -159,6 +185,7 @@ void menu() {
 	cout<<"6. Get minimum value"<<endl;
 	cout<<"7. Get value at pos"<<endl;
 	cout<<"8. Edit at pos"<<endl;
+	cout<<"9. Remove first"<<endl;
 	cout<<"0. Add first"<<endl;
 	cout<<"Your selection: ";
 }
@@ -222,6 +249,11 @@ int main() {
 				cout<<"Input position to edit: "; cin>>pos;
 				myList.editAtPos(x, pos);	
 				myList.display();			
+				break;
+			case 9:
+				cout<<"Remove first"<<endl;
+				myList.removeFirst(); 
+				myList.display();
 				break;
 			case 0:
 				cout<<"Bye bye!"<<endl;
