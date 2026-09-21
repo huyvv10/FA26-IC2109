@@ -198,7 +198,58 @@ class SinglyLinkedList {
 		
 		//Delete all elements with value as x
 		void removeAll(int x){
-			
+			if (isEmpty()) return;
+			while (head!=nullptr && head->info==x){
+				removeFirst();
+			}
+			while (head!=nullptr && tail->info==x){
+				removeLast();
+			}
+			Node *cur=head;
+			while (!isEmpty() && cur->next!=nullptr){
+				if (cur->next->info==x){
+					Node *tmp=cur->next;	
+					cur->next=tmp->next;				
+					delete tmp;
+				} else {
+					cur=cur->next;
+				}				
+			}
+		}
+		
+		//Sort Asc
+		void sortAsc(){
+			if (countNodes()<=1) return;
+			Node *cur=head;
+			while (cur->next!=nullptr){
+				Node *p=cur->next;
+				while (p!=nullptr){
+					if (cur->info > p->info){
+						int tmp = cur->info;
+						cur->info=p->info;
+						p->info=tmp;
+					}
+					p=p->next;
+				}
+				cur=cur->next;
+			}
+		}
+		//Sort Desc
+		void sortDesc(){
+			if (countNodes()<=1) return;
+			Node *cur=head;
+			while (cur->next!=nullptr){
+				Node *p=cur->next;
+				while (p!=nullptr){
+					if (cur->info < p->info){
+						int tmp = cur->info;
+						cur->info=p->info;
+						p->info=tmp;
+					}
+					p=p->next;
+				}
+				cur=cur->next;
+			}
 		}
 };
 
@@ -215,6 +266,10 @@ void menu() {
 	cout<<"9. Remove first"<<endl;
 	cout<<"10. Remove last"<<endl;
 	cout<<"11. Remove at pos"<<endl;
+	cout<<"12. Remove all"<<endl;
+	cout<<"13. Sort Asc"<<endl;	
+	cout<<"14. Sort Desc"<<endl;	
+	cout<<"15. Sort In range"<<endl;	
 	cout<<"0. Quit"<<endl;
 	cout<<"Your selection: ";
 }
@@ -293,6 +348,19 @@ int main() {
 				cout<<"Remove at pos"<<endl;
 				cout<<"Input position to remove: "; cin>>pos;
 				myList.removeAtPos(pos);
+				myList.display(); break;
+			case 12:
+				cout<<"Remove All."<<endl;
+				cout<<"Input a value to remove: "; cin>>x;
+				myList.removeAll(x);
+				myList.display(); break;
+			case 13:
+				cout<<"Sort in Asc"<<endl;
+				myList.sortAsc();
+				myList.display(); break;
+			case 14:
+				cout<<"Sort in Desc"<<endl;
+				myList.sortDesc();
 				myList.display(); break;
 			case 0:
 				cout<<"Bye bye!"<<endl;
