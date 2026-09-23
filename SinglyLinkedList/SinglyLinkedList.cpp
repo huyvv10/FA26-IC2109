@@ -251,6 +251,32 @@ class SinglyLinkedList {
 				cur=cur->next;
 			}
 		}
+		
+		//Sort Asc In the range
+		void sortAscInRange(int pos1, int pos2){
+			if (countNodes()<=1) return;
+			int i=0, j=0;
+			Node *cur=head;
+			while (i!=pos1){
+				i++;
+				cur=cur->next;
+			}
+			while (cur->next!=nullptr && i!=pos2){
+				Node *p=cur->next;
+				j=i+1;
+				while (p!=nullptr && j!=pos2+1){
+					if (cur->info > p->info){
+						int tmp = cur->info;
+						cur->info=p->info;
+						p->info=tmp;
+					}
+					p=p->next;
+					j++;
+				}
+				cur=cur->next;
+				i++;
+			}
+		}		
 };
 
 void menu() {
@@ -283,6 +309,10 @@ int main() {
 	myList.addLast(3);
 	myList.addLast(5);
 	myList.addLast(9);
+	myList.addLast(8);
+	myList.addLast(2);
+	myList.addLast(9);
+	myList.addLast(6);
 	myList.display();
 	cout<<"Number of nodes: "<<myList.countNodes()<<endl;
 	int x, pos, sel;
@@ -361,6 +391,10 @@ int main() {
 			case 14:
 				cout<<"Sort in Desc"<<endl;
 				myList.sortDesc();
+				myList.display(); break;
+			case 15:
+				cout<<"Sort in range"<<endl;
+				myList.sortAscInRange(2,7);
 				myList.display(); break;
 			case 0:
 				cout<<"Bye bye!"<<endl;
