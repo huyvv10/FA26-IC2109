@@ -18,13 +18,6 @@ void Car::displayCar() {
 	std::cout<<"("<<id<<","<<name<<","<<std::fixed<<std::setprecision(2)<<price<<")";
 }
 
-//void Car::displayCar2():
-//		std::cout<<left<<
-//	    setw(5)<<id<<
-//	    setw(25)<<name<<
-//	    right<<setw(10)<<
-//	    fixed<<setprecision(2)<<price<<std::endl {}
-
 void Car::displayCar2() {
 	std::cout<<std::left<<
 	    std::setw(5)<<id<<
