@@ -17,7 +17,20 @@ class BSTree {
 		Node *root;
 
 		BSTree() : root(nullptr) {}
-		~BSTree() {}
+		~BSTree() {
+			queue<Node *> myQ;
+			myQ.push(root);				//enqueue
+			while (!myQ.empty()) {
+				Node *p = myQ.front();
+				myQ.pop();				//dequeue
+				Node *tmp=p;
+				if (p->left!=nullptr)
+					myQ.push(p->left);
+				if (p->right!=nullptr)
+					myQ.push(p->right);
+				delete tmp;
+			}
+		}
 
 		bool isEmpty() {
 			return root==nullptr;
@@ -78,40 +91,40 @@ class BSTree {
 				postOrder(root->right);	//Visit right child
 			visit(root);				//Visit root
 		}
-		
+
 		//Level traversal
-		void bread_first_traversal(Node *root){
+		void bread_first_traversal(Node *root) {
 			queue<Node *> myQ;
 			myQ.push(root);				//enqueue
-			while (!myQ.empty()){
+			while (!myQ.empty()) {
 				Node *p = myQ.front();
 				visit(p);
 				myQ.pop();				//dequeue
 				if (p->left!=nullptr)
 					myQ.push(p->left);
 				if (p->right!=nullptr)
-					myQ.push(p->right);	
+					myQ.push(p->right);
 			}
 		}
-		
+
 		//Return number of nodes within the tree
-		int countNodes(){
+		int countNodes() {
 			int count=0;
 			queue<Node *> myQ;
 			myQ.push(root);				//enqueue
-			while (!myQ.empty()){
+			while (!myQ.empty()) {
 				Node *p = myQ.front();
 				count++;
 				myQ.pop();				//dequeue
 				if (p->left!=nullptr)
 					myQ.push(p->left);
 				if (p->right!=nullptr)
-					myQ.push(p->right);	
-			}	
-			return count;		
+					myQ.push(p->right);
+			}
+			return count;
 		}
-		
-		int countNodesRecursion(Node *root){
+
+		int countNodesRecursion(Node *root) {
 			int c=0, l=0, r=0;
 			if (root==nullptr) return 0;
 			c++;
@@ -119,16 +132,124 @@ class BSTree {
 				l = countNodesRecursion(root->left);
 			if (root->right!=nullptr)
 				r = countNodesRecursion(root->right);
-			return c + l + r;		
+			return c + l + r;
 		}
-		
-		int countInternalNodes(Node *root){
-			return 0;
+
+		int countInternalNodes(Node *root) {
+			int count=0;
+			queue<Node *> myQ;
+			myQ.push(root);				//enqueue
+			while (!myQ.empty()) {
+				Node *p = myQ.front();
+				if (p->left!=nullptr || p->right!=nullptr)
+					count++;
+				myQ.pop();				//dequeue
+				if (p->left!=nullptr)
+					myQ.push(p->left);
+				if (p->right!=nullptr)
+					myQ.push(p->right);
+			}
+			return count;
 		}
-		
-		int countExternalNodes(Node *root){
-			return 0;
+
+		//Count number of leaf nodes
+		int countExternalNodes(Node *root) {
+			int count=0;
+			queue<Node *> myQ;
+			myQ.push(root);				//enqueue
+			while (!myQ.empty()) {
+				Node *p = myQ.front();
+				if (p->left==nullptr && p->right==nullptr)
+					count++;
+				myQ.pop();				//dequeue
+				if (p->left!=nullptr)
+					myQ.push(p->left);
+				if (p->right!=nullptr)
+					myQ.push(p->right);
+			}
+			return count;
 		}
+
+		Node* findTheRightMostNode(Node* p) {
+			if (p==nullptr) return nullptr;
+			Node *cur=p->left;
+			if (cur->right ==nullptr) return cur;
+			while (cur->right!=nullptr) {
+				cur=cur->right;
+			}
+			return cur;
+		}
+
+		Node* deleteByCopying(Node *root, int x) {
+			if (root==nullptr) return nullptr;
+			if (x < root->data) {
+				root->left=deleteByCopying(root->left, x);
+			} else if (x > root->data) {
+				root->right=deleteByCopying(root->right, x);
+			} else {
+				//Case1: deleted node is a leaf node
+				if (root->left==nullptr && root->right==nullptr) {
+					delete root;
+					return nullptr;
+				}
+				//Case2: has a left subtree
+				if (root->right==nullptr) {
+					Node *tmp = root->left;
+					delete root;
+					return tmp;
+				}
+				//Case3: has a right subtree
+				if (root->left==nullptr) {
+					Node* tmp = root->right;
+					delete root;
+					return tmp;
+				}
+				//Case4: has two children
+				if (root->left!=nullptr && root->right!=nullptr) {
+					Node* copyNode = findTheRightMostNode(root);
+					root->data = copyNode->data;
+					root->left = deleteByCopying(root->left, copyNode->data);
+				}
+			}
+			return root;
+		}
+
+		Node* deleteByMerging(Node* root, int x) {
+			if (root==nullptr) return nullptr;
+			if (x < root->data) {
+				root->left=deleteByCopying(root->left, x);
+			} else if (x > root->data) {
+				root->right=deleteByCopying(root->right, x);
+			} else {
+				//Case1: deleted node is a leaf node
+				if (root->left==nullptr && root->right==nullptr) {
+					delete root;
+					return nullptr;
+				}
+				//Case2: has a left subtree
+				if (root->right==nullptr) {
+					Node *tmp = root->left;
+					delete root;
+					return tmp;
+				}
+				//Case3: has a right subtree
+				if (root->left==nullptr) {
+					Node* tmp = root->right;
+					delete root;
+					return tmp;
+				}
+				//Case4: has two children
+				if (root->left!=nullptr && root->right!=nullptr) {
+					Node* mergeNode = findTheRightMostNode(root);
+					mergeNode->right = root->right;
+					Node *tmp=root->left;
+					delete root;
+					return tmp;
+				}
+			}
+			return root;
+		}
+
 };
 int main() {
 	BSTree myBST;
@@ -148,13 +269,20 @@ int main() {
 	cout<<"---PreOrder Traversal---"<<endl;
 	myBST.preOrder(myBST.root);
 	cout<<"\n---InOrder Traversal---"<<endl;
-	myBST.inOrder(myBST.root); 
+	myBST.inOrder(myBST.root);
 	cout<<"\n---PostOrder Traversal---"<<endl;
 	myBST.postOrder(myBST.root);
 	cout<<"\n---Breadth First Traversal---"<<endl;
 	myBST.bread_first_traversal(myBST.root);
 	cout<<"\nNumber of nodes: "<<myBST.countNodes()<<endl;
 	cout<<"Number of nodes Recursion: "<<myBST.countNodesRecursion(myBST.root)<<endl;
-	
+	cout<<"Number of internal nodes: "<<myBST.countInternalNodes(myBST.root)<<endl;
+	cout<<"Number of external nodes: "<<myBST.countExternalNodes(myBST.root)<<endl;
+	cout<<"Delete by Copying"<<endl;
+	myBST.root = myBST.deleteByCopying(myBST.root, 6);
+	myBST.bread_first_traversal(myBST.root);
+//	cout<<"Delete by Merging"<<endl;
+//	myBST.root = myBST.deleteByMerging(myBST.root, 15);
+//	myBST.bread_first_traversal(myBST.root);
 	return 0;
 }
