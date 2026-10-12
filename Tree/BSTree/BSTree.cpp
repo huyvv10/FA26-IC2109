@@ -249,6 +249,60 @@ class BSTree {
 			}
 			return root;
 		}
+		
+		int countNodesOnlyHasALeftSubtree(Node *p){
+			int count=0;
+			if (p==nullptr) return count;
+			queue<Node *> myQ;
+			myQ.push(p);				//enqueue
+			while (!myQ.empty()) {
+				Node *cur = myQ.front();
+				if (cur->left!=nullptr && cur->right==nullptr)
+					count++;
+				myQ.pop();				//dequeue
+				if (cur->left!=nullptr)
+					myQ.push(cur->left);
+				if (cur->right!=nullptr)
+					myQ.push(cur->right);
+			}
+			return count;
+		}
+		
+		int countNodesOnlyHasARightSubtree(Node *p){
+			int count=0;
+			if (p==nullptr) return count;
+			queue<Node *> myQ;
+			myQ.push(p);				//enqueue
+			while (!myQ.empty()) {
+				Node *cur = myQ.front();
+				if (cur->left==nullptr && cur->right!=nullptr)
+					count++;
+				myQ.pop();				//dequeue
+				if (cur->left!=nullptr)
+					myQ.push(cur->left);
+				if (cur->right!=nullptr)
+					myQ.push(cur->right);
+			}
+			return count;
+		}
+		
+		int countNodesHaveTwoChildren(Node *p){
+			int count=0;
+			if (p==nullptr) return count;
+			queue<Node *> myQ;
+			myQ.push(p);				//enqueue
+			while (!myQ.empty()) {
+				Node *cur = myQ.front();
+				if (cur->left!=nullptr && cur->right!=nullptr)
+					count++;
+				myQ.pop();				//dequeue
+				if (cur->left!=nullptr)
+					myQ.push(cur->left);
+				if (cur->right!=nullptr)
+					myQ.push(cur->right);
+			}
+			return count;
+		}
 
 };
 int main() {
@@ -278,11 +332,14 @@ int main() {
 	cout<<"Number of nodes Recursion: "<<myBST.countNodesRecursion(myBST.root)<<endl;
 	cout<<"Number of internal nodes: "<<myBST.countInternalNodes(myBST.root)<<endl;
 	cout<<"Number of external nodes: "<<myBST.countExternalNodes(myBST.root)<<endl;
-	cout<<"Delete by Copying"<<endl;
-	myBST.root = myBST.deleteByCopying(myBST.root, 6);
-	myBST.bread_first_traversal(myBST.root);
+//	cout<<"Delete by Copying"<<endl;
+//	myBST.root = myBST.deleteByCopying(myBST.root, 6);
+//	myBST.bread_first_traversal(myBST.root);
 //	cout<<"Delete by Merging"<<endl;
 //	myBST.root = myBST.deleteByMerging(myBST.root, 15);
 //	myBST.bread_first_traversal(myBST.root);
+	cout<<"Number of nodes which have a left child: "<<myBST.countNodesOnlyHasALeftSubtree(myBST.root)<<endl;
+	cout<<"Number of nodes which have a right child: "<<myBST.countNodesOnlyHasARightSubtree(myBST.root)<<endl;
+	cout<<"Number of nodes which have two children: "<<myBST.countNodesHaveTwoChildren(myBST.root)<<endl;
 	return 0;
 }
