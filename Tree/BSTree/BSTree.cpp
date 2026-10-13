@@ -217,9 +217,9 @@ class BSTree {
 		Node* deleteByMerging(Node* root, int x) {
 			if (root==nullptr) return nullptr;
 			if (x < root->data) {
-				root->left=deleteByCopying(root->left, x);
+				root->left=deleteByMerging(root->left, x);
 			} else if (x > root->data) {
-				root->right=deleteByCopying(root->right, x);
+				root->right=deleteByMerging(root->right, x);
 			} else {
 				//Case1: deleted node is a leaf node
 				if (root->left==nullptr && root->right==nullptr) {
