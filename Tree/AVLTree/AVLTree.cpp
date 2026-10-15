@@ -3,63 +3,63 @@
 
 using namespace std;
 
-class Node{
+class Node {
 	public:
 		int data, height;
 		Node *left, *right;
 		Node(int _data):
-			data(_data), height(1), left(nullptr), right(nullptr){}	
+			data(_data), height(1), left(nullptr), right(nullptr) {}
 };
 
-class AVLTree{
+class AVLTree {
 	public:
 		Node *root;
-		AVLTree(){
+		AVLTree() {
 			this->root=nullptr;
 		}
-		
-		~AVLTree(){}
-		
-		bool isEmpty(){
+
+		~AVLTree() {}
+
+		bool isEmpty() {
 			return root==nullptr;
-		} 
-		
-		int getHeight(Node *p){
+		}
+
+		int getHeight(Node *p) {
 			if (p==nullptr) return 0;
 			return p->height;
 		}
-		
-		int getBalance(Node *p){
+
+		int getBalance(Node *p) {
 			if (p==nullptr) return 0;
 			return getHeight(p->left) - getHeight(p->right);
 		}
-		
-		Node *rightRotate(Node *p){
+
+		Node *rightRotate(Node *p) {
 			Node *k = p->left;
 			p->left = k->right;
 			k->right= p;
-			
+
 			p->height = max(getHeight(p->left), getHeight(p->right))+1;
 			k->height = max(getHeight(k->left), getHeight(k->right))+1;
 			return k;
 		}
-		
-		Node *leftRotate(Node *p){
+
+		Node *leftRotate(Node *p) {
 			Node* k = p->right;
 			p->right= k->left;
 			k->left = p;
-			
+
 			p->height = max(getHeight(p->left), getHeight(p->right))+1;
 			k->height = max(getHeight(k->left), getHeight(k->right))+1;
-			return k;			
+			return k;
 		}
-		
-		Node* insertAVLNode(Node* root, int x){
+
+		Node* insertAVLNode(Node* root, int x) {
 			Node* newNode = new Node(x);
 			if (root==nullptr) return newNode;
-			if (x < root->data){
+			if (x < root->data) {
 				root->left = insertAVLNode(root->left, x);
-			} else if (x > root->data){
+			} else if (x > root->data) {
 				root->right = insertAVLNode(root->right, x);
 			} else {
 				return root;
@@ -72,26 +72,26 @@ class AVLTree{
 			if (balanceFactor>1 && x < root->left->data)
 				return rightRotate(root);
 			//Case 2:
-			if (balanceFactor>1 && x > root->left->data){
+			if (balanceFactor>1 && x > root->left->data) {
 				root->left = leftRotate(root->left);
 				return rightRotate(root);
 			}
-			//Case 3: 
+			//Case 3:
 			if (balanceFactor<-1 && x > root->right->data)
 				return leftRotate(root);
 			//Case 4:
-			if (balanceFactor<-1 && x < root->right->data){
+			if (balanceFactor<-1 && x < root->right->data) {
 				root->right = rightRotate(root->right);
 				return leftRotate(root);
-			}	
+			}
 			return root;
 		}
-		
+
 		void visit(Node *p) {
 			if (isEmpty()) return;
 			cout<<p->data<<" ";
 		}
-				
+
 		//Level traversal
 		void bread_first_traversal(Node *root) {
 			queue<Node *> myQ;
@@ -106,10 +106,211 @@ class AVLTree{
 					myQ.push(p->right);
 			}
 		}
-		
+
+		Node* findTheRightMostNode(Node* p) {
+			if (p == nullptr || p->left == nullptr)
+				return nullptr;
+			Node* cur = p->left;
+			while (cur->right != nullptr) {
+				cur = cur->right;
+			}
+			return cur;
+		}
+
+		Node* deleteByCopying2(Node *root, int x) {
+			if (root==nullptr) return nullptr;
+			if (x < root->data) {
+				root->left=deleteByCopying(root->left, x);
+			} else if (x > root->data) {
+				root->right=deleteByCopying(root->right, x);
+			} else {
+				//Case1: deleted node is a leaf node
+				if (root->left==nullptr && root->right==nullptr) {
+					delete root;
+					return nullptr;
+				}
+				//Case2: has a left subtree
+				if (root->right==nullptr) {
+					Node *tmp = root->left;
+					delete root;
+					return tmp;
+				}
+				//Case3: has a right subtree
+				if (root->left==nullptr) {
+					Node* tmp = root->right;
+					delete root;
+					return tmp;
+				}
+				//Case4: has two children
+				if (root->left!=nullptr && root->right!=nullptr) {
+					Node* copyNode = findTheRightMostNode(root);
+					root->data = copyNode->data;
+					root->left = deleteByCopying(root->left, copyNode->data);
+				}
+			}
+			//Update height
+			root->height = max(getHeight(root->left), getHeight(root->right))+1;
+			//Calculate balance factor
+			int balanceFactor = getBalance(root);
+			//Case 1:
+			if (balanceFactor>1 && getBalance(root->left)>=0)
+				return rightRotate(root);
+			//Case 2:
+			if (balanceFactor>1 && getBalance(root->left)<0) {
+				root->left = leftRotate(root->left);
+				return rightRotate(root);
+			}
+			//Case 3:
+			if (balanceFactor<-1 && getBalance(root->right)<=0)
+				return leftRotate(root);
+			//Case 4:
+			if (balanceFactor<-1 && getBalance(root->right)>0) {
+				root->right = rightRotate(root->right);
+				return leftRotate(root);
+			}
+			return root;
+		}
+
+//		Node* deleteByCopying(Node* root, int x) {
+//			if (root == nullptr)
+//				return nullptr;
+//
+//			if (x < root->data) {
+//				root->left = deleteByCopying(root->left, x);
+//			} else if (x > root->data) {
+//				root->right = deleteByCopying(root->right, x);
+//			} else {
+//				// Case 1: Leaf node
+//				if (root->left == nullptr &&
+//				        root->right == nullptr) {
+//					delete root;
+//					return nullptr;
+//				}
+//
+//				// Case 2: Only left child
+//				if (root->right == nullptr) {
+//					Node* tmp = root->left;
+//					delete root;
+//					return tmp;
+//				}
+//
+//				// Case 3: Only right child
+//				if (root->left == nullptr) {
+//					Node* tmp = root->right;
+//					delete root;
+//					return tmp;
+//				}
+//
+//				// Case 4: Two children
+//				Node* copyNode = findTheRightMostNode(root);
+//				root->data = copyNode->data;
+//				root->left =
+//				    deleteByCopying(root->left, copyNode->data);
+//			}
+//
+//			// Update height
+//			root->height =
+//			    max(getHeight(root->left),
+//			        getHeight(root->right)) + 1;
+//
+//			// Calculate balance factor
+//			int balanceFactor = getBalance(root);
+//
+//			// LL Case
+//			if (balanceFactor > 1 &&
+//			        getBalance(root->left) >= 0)
+//				return rightRotate(root);
+//
+//			// LR Case
+//			if (balanceFactor > 1 &&
+//			        getBalance(root->left) < 0) {
+//				root->left = leftRotate(root->left);
+//				return rightRotate(root);
+//			}
+//
+//			// RR Case
+//			if (balanceFactor < -1 &&
+//			        getBalance(root->right) <= 0)
+//				return leftRotate(root);
+//
+//			// RL Case
+//			if (balanceFactor < -1 &&
+//			        getBalance(root->right) > 0) {
+//				root->right = rightRotate(root->right);
+//				return leftRotate(root);
+//			}
+//
+//			return root;
+//		}
+
+		Node* deleteByCopying(Node* root, int x) {
+			if (root == nullptr)
+				return nullptr;
+
+			if (x < root->data) {
+				root->left = deleteByCopying(root->left, x);
+			} else if (x > root->data) {
+				root->right = deleteByCopying(root->right, x);
+			} else {
+				// Case 1: Leaf node
+				if (root->left == nullptr && root->right == nullptr) {
+					delete root;
+					return nullptr;
+				}
+
+				// Case 2: Only left child
+				if (root->right == nullptr) {
+					Node* tmp = root->left;
+					delete root;
+					return tmp;
+				}
+
+				// Case 3: Only right child
+				if (root->left == nullptr) {
+					Node* tmp = root->right;
+					delete root;
+					return tmp;
+				}
+
+				// Case 4: Two children
+				Node* copyNode = findTheRightMostNode(root);
+
+				root->data = copyNode->data;
+				root->left = deleteByCopying(root->left, copyNode->data);
+			}
+
+			// Update height
+			root->height =
+			    max(getHeight(root->left), getHeight(root->right)) + 1;
+
+			// Calculate balance factor
+			int balanceFactor = getBalance(root);
+
+			// Left-Left
+			if (balanceFactor > 1 && getBalance(root->left) >= 0)
+				return rightRotate(root);
+
+			// Left-Right
+			if (balanceFactor > 1 && getBalance(root->left) < 0) {
+				root->left = leftRotate(root->left);
+				return rightRotate(root);
+			}
+
+			// Right-Right
+			if (balanceFactor < -1 && getBalance(root->right) <= 0)
+				return leftRotate(root);
+
+			// Right-Left
+			if (balanceFactor < -1 && getBalance(root->right) > 0) {
+				root->right = rightRotate(root->right);
+				return leftRotate(root);
+			}
+
+			return root;
+		}
 };
 
-int main(){
+int main() {
 	AVLTree myAVL;
 	myAVL.root = myAVL.insertAVLNode(myAVL.root, 20);
 	myAVL.root = myAVL.insertAVLNode(myAVL.root, 6);
@@ -122,5 +323,9 @@ int main(){
 	myAVL.root = myAVL.insertAVLNode(myAVL.root, 27);
 	myAVL.bread_first_traversal(myAVL.root);
 	cout<<endl;
+	myAVL.root = myAVL.deleteByCopying(myAVL.root, 20);
+	myAVL.bread_first_traversal(myAVL.root);
+	cout<<endl;
+
 	return 0;
 }
