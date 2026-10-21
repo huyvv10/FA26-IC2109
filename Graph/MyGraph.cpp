@@ -82,6 +82,19 @@ class Graph{
 				if (adj[i][toInt(v)] != 0) count++;
 			return count;	
 		}
+		
+		void DFS_Visit(char v, bool visited[]){
+			visit(v);
+			visited[toInt(v)]=true;
+			for (int i=0; i<size; i++)
+				if (!visited[i] && adj[i][toInt(v)]!=0)
+					DFS_Visit(toChar(i), visited);
+		}
+		
+		void DFS(char v){
+			bool visited[size]={false};
+			DFS_Visit(v, visited);
+		}
 };
 
 int main(){
@@ -89,12 +102,14 @@ int main(){
 	myG.loadGraph("Graph.txt");
 	myG.displayGraph();
 	cout<<"--BFS--"<<endl;
-	char startVertex = 'A';
+	char startVertex = 'G';
 	cout<<"Start traversal by BFS from: "<<startVertex<<endl;
 	myG.BFS(startVertex);
 	cout<<endl<<endl;
 	for (int i=0; i<myG.getSize(); i++)
 		cout<<"The degree of "<<myG.toChar(i)<<": "
 			<<myG.deg(myG.toChar(i))<<endl;
+	cout<<"\nDFS start from vertex: "<<startVertex<<endl;
+	myG.DFS(startVertex);		
 	return 0;
 }
